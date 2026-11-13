@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>TRACE — Note &amp; Journal</title>
+  <!-- Inline SVG Favicon to prevent /favicon.ico 404 in python3 http.server -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%230b0f17'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%23e2e8f0'/%3E%3C/svg%3E" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts: Inter, Instrument Serif, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      darkMode: ['selector', '[data-theme="dark"]'],
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'sans-serif'],
+            serif: ['"Instrument Serif"', 'Georgia', 'serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* ==========================================================================
+       REFINED LIQUID GLASS DESIGN SYSTEM (ZERO VS CODE CSS LINTER WARNINGS)
+       - Inspired by the "Liquid Glass UI Adoption" reference:
+         Calm frosted translucency, crisp 1px specular border, soft inner cushion,
+         and a 100% stationary minimal background.
+       ========================================================================== */
+    :root[data-theme="dark"] {
+      /* Deep, genuinely dark minimal slate-obsidian background */
+      --bg-base: #07090e;
+      --bg-canvas:
+        radial-gradient(900px circle at 18% 12%, rgba(30, 41, 59, 0.34) 0%, transparent 65%),
+        radial-gradient(850px circle at 84% 78%, rgba(23, 32, 48, 0.30) 0%, transparent 65%),
+        linear-gradient(160deg, #06080d 0%, #090c13 52%, #06080c 100%);
+
+      /* Frosted Liquid Glass Card Material (Dark Mode) */
+      --glass-card-bg: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.085) 0%,
+        rgba(255, 255, 255, 0.032) 55%,
+        rgba(255, 255, 255, 0.055) 100%
+      );
+      --glass-card-bg-hover: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.11) 0%,
+        rgba(255, 255, 255, 0.045) 55%,
+        rgba(255, 255, 255, 0.075) 100%
+      );
+      --glass-card-border: rgba(255, 255, 255, 0.16);
+      --glass-card-border-hover: rgba(255, 255, 255, 0.24);
+      --glass-card-shadow:
+        0 18px 40px -12px rgba(0, 0, 0, 0.62),
+        0 4px 12px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.28),
+        inset 0 -1px 0 0 rgba(255, 255, 255, 0.07),
+        inset 0 0 22px rgba(255, 255, 255, 0.02);
+
+      /* Frosted Liquid Glass Capsule Pill Material (Dark Mode) */
+      --glass-pill-bg: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.095) 0%,
+        rgba(255, 255, 255, 0.04) 100%
+      );
+      --glass-pill-bg-hover: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.14) 0%,
+        rgba(255, 255, 255, 0.065) 100%
+      );
+      --glass-pill-active-bg: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.20) 0%,
+        rgba(255, 255, 255, 0.09) 100%
+      );
+      --glass-pill-border: rgba(255, 255, 255, 0.17);
+      --glass-pill-active-border: rgba(255, 255, 255, 0.34);
+      --glass-pill-shadow:
+        0 6px 16px -4px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.26),
+        inset 0 -1px 0 0 rgba(255, 255, 255, 0.06);
+
+      /* Track & Input Well */
+      --glass-well-bg: rgba(0, 0, 0, 0.28);
+      --glass-well-border: rgba(255, 255, 255, 0.11);
+
+      /* Typography & Dividers */
+      --text-primary: #f1f5f9;
+      --text-secondary: rgba(226, 232, 240, 0.72);
+      --text-muted: rgba(148, 163, 184, 0.54);
+      --divider-line: rgba(255, 255, 255, 0.09);
+    }
+
+    :root[data-theme="light"] {
+      /* Matches the 2nd Screenshot ("Liquid Glass UI Adoption") soft misty slate-pearl studio tone */
+      --bg-base: #cfd8e3;
+      --bg-canvas:
+        radial-gradient(950px circle at 15% 15%, rgba(162, 182, 205, 0.55) 0%, transparent 65%),
+        radial-gradient(900px circle at 85% 80%, rgba(241, 245, 249, 0.75) 0%, transparent 65%),
+        linear-gradient(145deg, #c3cedb 0%, #d8e0ea 42%, #e3e8f0 74%, #cbd4e0 100%);
+
+      /* Frosted Liquid Glass Card Material (Light Mode) */
+      --glass-card-bg: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.54) 0%,
+        rgba(255, 255, 255, 0.30) 55%,
+        rgba(255, 255, 255, 0.44) 100%
+      );
+      --glass-card-bg-hover: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.64) 0%,
+        rgba(255, 255, 255, 0.38) 55%,
+        rgba(255, 255, 255, 0.52) 100%
+      );
+      --glass-card-border: rgba(255, 255, 255, 0.74);
+      --glass-card-border-hover: rgba(255, 255, 255, 0.90);
+      --glass-card-shadow:
+        0 16px 36px -10px rgba(30, 41, 59, 0.11),
+        0 4px 10px rgba(30, 41, 59, 0.05),
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.92),
+        inset 0 -1px 1px 0 rgba(255, 255, 255, 0.48),
+        inset 0 0 24px rgba(255, 255, 255, 0.22);
+
+      /* Frosted Liquid Glass Capsule Pill Material (Light Mode) */
+      --glass-pill-bg: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.52) 0%,
+        rgba(255, 255, 255, 0.28) 100%
+      );
+      --glass-pill-bg-hover: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.68) 0%,
+        rgba(255, 255, 255, 0.42) 100%
+      );
+      --glass-pill-active-bg: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.84) 0%,
+        rgba(255, 255, 255, 0.58) 100%
+      );
+      --glass-pill-border: rgba(255, 255, 255, 0.72);
+      --glass-pill-active-border: rgba(255, 255, 255, 0.96);
+      --glass-pill-shadow:
+        0 6px 16px -4px rgba(30, 41, 59, 0.09),
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.92),
+        inset 0 -1px 0 0 rgba(255, 255, 255, 0.45);
+
+      /* Track & Input Well */
+      --glass-well-bg: rgba(255, 255, 255, 0.28);
+      --glass-well-border: rgba(255, 255, 255, 0.68);
+
+      /* Typography & Dividers */
+      --text-primary: #0f172a;
+      --text-secondary: rgba(15, 23, 42, 0.72);
+      --text-muted: rgba(51, 65, 85, 0.55);
+      --divider-line: rgba(15, 23, 42, 0.09);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      background-image: var(--bg-canvas);
+      background-attachment: fixed;
+      color: var(--text-primary);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background-color 0.25s ease, color 0.2s ease;
+    }
+
+    /* ==========================================================================
+       LIQUID GLASS SURFACES & CAPSULES
+       ========================================================================== */
+    .liquid-glass {
+      position: relative;
+      background: var(--glass-card-bg);
+      -webkit-backdrop-filter: blur(28px) saturate(165%);
+      backdrop-filter: blur(28px) saturate(165%);
+      border: 1px solid var(--glass-card-border);
+      box-shadow: var(--glass-card-shadow);
+      border-radius: 24px;
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  background 0.22s ease,
+                  border-color 0.22s ease,
+                  box-shadow 0.22s ease;
+    }
+
+    .liquid-glass-interactive:hover {
+      transform: translateY(-2px);
+      background: var(--glass-card-bg-hover);
+      border-color: var(--glass-card-border-hover);
+    }
+
+    .liquid-pill {
+      position: relative;
+      border-radius: 9999px;
+      background: var(--glass-pill-bg);
+      -webkit-backdrop-filter: blur(24px) saturate(160%);
+      backdrop-filter: blur(24px) saturate(160%);
+      border: 1px solid var(--glass-pill-border);
+      box-shadow: var(--glass-pill-shadow);
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .liquid-pill:hover {
+      background: var(--glass-pill-bg-hover);
+      border-color: var(--glass-pill-active-border);
+    }
+
+    .liquid-pill:active {
+      transform: scale(0.985);
+    }
+
+    .liquid-pill-active {
+      background: var(--glass-pill-active-bg);
+      border-color: var(--glass-pill-active-border);
+    }
+
+    .liquid-icon-btn {
+      position: relative;
+      border-radius: 9999px;
+      background: var(--glass-pill-bg);
+      -webkit-backdrop-filter: blur(24px) saturate(160%);
+      backdrop-filter: blur(24px) saturate(160%);
+      border: 1px solid var(--glass-pill-border);
+      box-shadow: var(--glass-pill-shadow);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .liquid-icon-btn:hover {
+      background: var(--glass-pill-bg-hover);
+      border-color: var(--glass-pill-active-border);
+    }
+
+    /* Segmented Switcher Track & Sliding Pill Thumb */
+    .segmented-glass-track {
+      position: relative;
+      border-radius: 9999px;
+      padding: 4px;
+      background: var(--glass-well-bg);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      backdrop-filter: blur(20px) saturate(160%);
+      border: 1px solid var(--glass-well-border);
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.18);
+    }
+
+    .segmented-glass-thumb {
+      position: absolute;
+      top: 4px;
+      bottom: 4px;
+      left: 4px;
+      width: calc(50% - 4px);
+      border-radius: 9999px;
+      background: var(--glass-pill-active-bg);
+      border: 1px solid var(--glass-pill-active-border);
+      box-shadow: var(--glass-pill-shadow);
+      transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+      z-index: 0;
+    }
+
+    .segmented-glass-track[data-active="journal"] .segmented-glass-thumb {
+      transform: translateX(100%);
+    }
+
+    /* Semantic Theme Tokens */
+    .text-primary-token { color: var(--text-primary); }
+    .text-secondary-token { color: var(--text-secondary); }
+    .text-muted-token { color: var(--text-muted); }
+    .border-token { border-color: var(--divider-line); }
+
+    /* Workspace Switching */
+    .workspace-view {
+      transition: opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .workspace-hidden {
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      transform: translateY(6px);
+      visibility: hidden;
+    }
+
+    .workspace-active {
+      opacity: 1;
+      transform: translateY(0);
+      visibility: visible;
+    }
+
+    textarea:focus,
+    input:focus {
+      outline: none;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.26);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+
+<body data-mode="note" class="selection:bg-white/20">
+
+  <!-- ==========================================================================
+       MAIN APPLICATION SHELL (STATIONARY MINIMAL LIQUID GLASS)
+       ========================================================================== -->
+  <div class="relative z-10 flex flex-col min-h-screen max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-16">
+
+    <!-- ========================================================================
+         TOP LIQUID GLASS HEADER BAR (macOS Tauri Drag Region Ready)
+         ======================================================================== -->
+    <header data-tauri-drag-region class="liquid-glass sticky top-3 z-30 px-4 sm:px-6 py-3 mb-8 flex flex-wrap items-center justify-between gap-3">
+
+      <!-- Left: macOS Window Controls + TRACE Brand -->
+      <div class="flex items-center gap-3.5" data-tauri-drag-region>
+        <div class="hidden sm:flex items-center gap-2 pr-1">
+          <span class="w-3 h-3 rounded-full bg-[#FF5F56]/80 border border-white/20"></span>
+          <span class="w-3 h-3 rounded-full bg-[#FFBD2E]/80 border border-white/20"></span>
+          <span class="w-3 h-3 rounded-full bg-[#27C93F]/80 border border-white/20"></span>
+        </div>
+
+        <div class="flex items-center gap-2.5">
+          <div class="liquid-icon-btn w-8 h-8">
+            <span class="w-2 h-2 rounded-full bg-current opacity-90"></span>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-semibold tracking-[0.18em] text-sm text-primary-token">TRACE</span>
+              <span id="runtimeBadge" class="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full border border-token text-secondary-token">
+                WEB · LOCAL
+              </span>
+            </div>
+            <p class="text-[11px] text-muted-token hidden sm:block">Minimal Note &amp; Journal</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center: Segmented Mode Switcher (Notes <-> Journal) -->
+      <div class="order-3 md:order-2 w-full md:w-auto flex justify-center">
+        <div id="modeSwitcherTrack" data-active="note" class="segmented-glass-track flex items-center w-full sm:w-[290px]">
+          <div class="segmented-glass-thumb"></div>
+
+          <button
+            type="button"
+            id="btnModeNote"
+            onclick="app.switchMode('note')"
+            class="relative z-10 flex-1 flex items-center justify-center gap-2 py-1.5 px-4 rounded-full text-xs sm:text-sm font-medium text-primary-token transition-colors"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            <span>Notes</span>
+            <span id="noteCountBadge" class="text-[11px] font-mono px-1.5 py-0.2 rounded-full bg-black/15 dark:bg-white/15">4</span>
+          </button>
+
+          <button
+            type="button"
+            id="btnModeJournal"
+            onclick="app.switchMode('journal')"
+            class="relative z-10 flex-1 flex items-center justify-center gap-2 py-1.5 px-4 rounded-full text-xs sm:text-sm font-medium text-secondary-token transition-colors"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+            <span>Journal</span>
+            <span id="journalCountBadge" class="text-[11px] font-mono px-1.5 py-0.2 rounded-full bg-black/15 dark:bg-white/15">2</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Right: Search Pill, Data Bridge & Silent Light/Dark Toggle -->
+      <div class="order-2 md:order-3 flex items-center gap-2">
+        <div class="liquid-pill px-3.5 py-1.5 flex items-center gap-2 w-36 sm:w-48">
+          <svg class="w-3.5 h-3.5 text-secondary-token shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.2-5.2m1.7-4.3a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/>
+          </svg>
+          <input
+            id="globalSearchInput"
+            type="text"
+            oninput="app.handleSearch(this.value)"
+            placeholder="Search"
+            class="w-full bg-transparent text-xs sm:text-sm text-primary-token placeholder:text-muted-token"
+          />
+          <span class="text-[10px] font-mono text-muted-token hidden sm:inline">⌘K</span>
+        </div>
+
+        <button
+          type="button"
+          onclick="app.openBridgeModal()"
+          class="liquid-pill px-3.5 py-1.5 text-xs font-medium text-primary-token flex items-center gap-1.5"
+          title="Backup &amp; Native Packaging Bridge"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.9">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
+          </svg>
+          <span class="hidden sm:inline">Backup</span>
+        </button>
+
+        <button
+          type="button"
+          id="themeToggleBtn"
+          onclick="app.toggleTheme()"
+          class="liquid-icon-btn w-9 h-9 text-primary-token"
+          title="Switch Light / Dark Mode (⌘D)"
+          aria-label="Switch Light / Dark Mode"
+        >
+          <svg id="iconSun" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/>
+          </svg>
+          <svg id="iconMoon" class="w-4 h-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ========================================================================
+         MAIN WORKSPACE AREA
+         ======================================================================== -->
+    <main class="relative flex-1">
+
+      <!-- ======================================================================
+           VIEW 1: QUICK NOTES WORKSPACE
+           ====================================================================== -->
+      <section id="viewNote" class="workspace-view workspace-active space-y-8">
+
+        <!-- Quick Note Liquid Glass Composer -->
+        <div class="liquid-glass p-6 sm:p-7 max-w-3xl mx-auto">
+          <div class="flex items-center justify-between gap-3 mb-3">
+            <input
+              id="noteTitleInput"
+              type="text"
+              placeholder="Title (optional — first line becomes title if left blank)"
+              class="w-full bg-transparent text-base sm:text-lg font-semibold text-primary-token placeholder:text-muted-token"
+            />
+            <button
+              type="button"
+              id="notePinToggle"
+              onclick="app.toggleComposerPin()"
+              class="liquid-pill px-3.5 py-1.5 text-xs font-medium flex items-center gap-1.5 text-secondary-token shrink-0"
+              title="Pin Note"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+              </svg>
+              <span>Pin</span>
+            </button>
+          </div>
+
+          <textarea
+            id="noteBodyInput"
+            rows="3"
+            placeholder="Capture a quick note, task, or thought... (⌘ + Enter to save)"
+            class="w-full bg-transparent text-sm sm:text-[15px] leading-relaxed text-primary-token placeholder:text-muted-token resize-none"
+          ></textarea>
+
+          <div class="pt-4 mt-2 border-t border-token flex flex-wrap items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center gap-2" id="composerTagGroup">
+              <button type="button" onclick="app.selectComposerTag('idea')" data-tag="idea" class="composer-tag liquid-pill liquid-pill-active text-xs font-medium px-3.5 py-1.5 text-primary-token">#idea</button>
+              <button type="button" onclick="app.selectComposerTag('work')" data-tag="work" class="composer-tag liquid-pill text-xs font-medium px-3.5 py-1.5 text-secondary-token">#work</button>
+              <button type="button" onclick="app.selectComposerTag('design')" data-tag="design" class="composer-tag liquid-pill text-xs font-medium px-3.5 py-1.5 text-secondary-token">#design</button>
+              <button type="button" onclick="app.selectComposerTag('checklist')" data-tag="checklist" class="composer-tag liquid-pill text-xs font-medium px-3.5 py-1.5 text-secondary-token">#checklist</button>
+
+              <button
+                type="button"
+                onclick="app.insertNoteChecklist()"
+                class="liquid-pill text-xs font-medium px-3.5 py-1.5 text-secondary-token hover:text-primary-token flex items-center gap-1"
+              >
+                <span>+ Checklist</span>
+              </button>
+            </div>
+
+            <div class="flex items-center gap-3 ml-auto">
+              <span class="text-[11px] font-mono text-muted-token hidden sm:inline">⌘ + Enter</span>
+              <button
+                type="button"
+                onclick="app.saveQuickNote()"
+                class="liquid-pill liquid-pill-active px-5 py-2 text-xs sm:text-sm font-semibold text-primary-token flex items-center gap-2"
+              >
+                <span>Save Note</span>
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter & Search Row -->
+        <div class="flex flex-wrap items-center justify-between gap-3 max-w-5xl mx-auto">
+          <div class="flex items-center gap-2 overflow-x-auto pb-1" id="noteFilterGroup">
+            <button type="button" onclick="app.setNoteFilter('ALL')" data-filter="ALL" class="note-filter-btn liquid-pill liquid-pill-active text-xs font-medium px-4 py-1.5 text-primary-token shrink-0">All</button>
+            <button type="button" onclick="app.setNoteFilter('PINNED')" data-filter="PINNED" class="note-filter-btn liquid-pill text-xs font-medium px-4 py-1.5 text-secondary-token shrink-0">Pinned</button>
+            <button type="button" onclick="app.setNoteFilter('idea')" data-filter="idea" class="note-filter-btn liquid-pill text-xs font-medium px-3.5 py-1.5 text-secondary-token shrink-0">#idea</button>
+            <button type="button" onclick="app.setNoteFilter('work')" data-filter="work" class="note-filter-btn liquid-pill text-xs font-medium px-3.5 py-1.5 text-secondary-token shrink-0">#work</button>
+            <button type="button" onclick="app.setNoteFilter('design')" data-filter="design" class="note-filter-btn liquid-pill text-xs font-medium px-3.5 py-1.5 text-secondary-token shrink-0">#design</button>
+            <button type="button" onclick="app.setNoteFilter('checklist')" data-filter="checklist" class="note-filter-btn liquid-pill text-xs font-medium px-3.5 py-1.5 text-secondary-token shrink-0">#checklist</button>
+          </div>
+
+          <div class="liquid-pill px-4 py-1.5 flex items-center gap-2 w-full sm:w-64">
+            <svg class="w-3.5 h-3.5 text-secondary-token shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.2-5.2m1.7-4.3a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/>
+            </svg>
+            <input
+              id="inlineNoteSearch"
+              type="text"
+              oninput="app.handleSearch(this.value)"
+              placeholder="Filter notes or tags..."
+              class="w-full bg-transparent text-xs text-primary-token placeholder:text-muted-token"
+            />
+          </div>
+        </div>
+
+        <!-- Notes Grid -->
+        <div class="max-w-5xl mx-auto space-y-8">
+          <div id="pinnedNotesSection" class="space-y-3.5 hidden">
+            <div class="flex items-center gap-3 px-1">
+              <span class="text-[11px] font-mono uppercase tracking-[0.18em] text-secondary-token font-medium">Pinned Notes</span>
+              <div class="h-px flex-1 border-t border-token"></div>
+            </div>
+            <div id="pinnedNotesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+          </div>
+
+          <div class="space-y-3.5">
+            <div class="flex items-center gap-3 px-1">
+              <span id="recentNotesLabel" class="text-[11px] font-mono uppercase tracking-[0.18em] text-secondary-token font-medium">Recent Notes</span>
+              <div class="h-px flex-1 border-t border-token"></div>
+            </div>
+            <div id="recentNotesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================================
+           VIEW 2: JOURNAL WORKSPACE
+           ====================================================================== -->
+      <section id="viewJournal" class="workspace-view workspace-hidden">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+          <!-- Left Sidebar: Journal Timeline -->
+          <aside class="lg:col-span-4 liquid-glass p-5 sm:p-6 space-y-4">
+            <div class="flex items-center justify-between gap-2">
+              <div>
+                <h2 class="text-base font-semibold tracking-tight text-primary-token">Journal Entries</h2>
+                <p class="text-xs text-secondary-token">Long-form reflection &amp; clarity</p>
+              </div>
+              <button
+                type="button"
+                onclick="app.createNewJournal()"
+                class="liquid-pill liquid-pill-active px-3.5 py-2 text-xs font-semibold text-primary-token flex items-center gap-1.5"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+                </svg>
+                <span>New Entry</span>
+              </button>
+            </div>
+
+            <!-- Mood Filter Pills -->
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-1" id="journalMoodFilterGroup">
+              <button type="button" onclick="app.setJournalMoodFilter('ALL')" data-mood="ALL" class="journal-mood-filter liquid-pill liquid-pill-active text-[11px] font-medium px-3 py-1 text-primary-token shrink-0">All</button>
+              <button type="button" onclick="app.setJournalMoodFilter('Calm')" data-mood="Calm" class="journal-mood-filter liquid-pill text-[11px] font-medium px-3 py-1 text-secondary-token shrink-0">Calm</button>
+              <button type="button" onclick="app.setJournalMoodFilter('Focused')" data-mood="Focused" class="journal-mood-filter liquid-pill text-[11px] font-medium px-3 py-1 text-secondary-token shrink-0">Focused</button>
+              <button type="button" onclick="app.setJournalMoodFilter('Inspired')" data-mood="Inspired" class="journal-mood-filter liquid-pill text-[11px] font-medium px-3 py-1 text-secondary-token shrink-0">Inspired</button>
+              <button type="button" onclick="app.setJournalMoodFilter('Reflective')" data-mood="Reflective" class="journal-mood-filter liquid-pill text-[11px] font-medium px-3 py-1 text-secondary-token shrink-0">Reflective</button>
+            </div>
+
+            <!-- Timeline List -->
+            <div id="journalTimelineList" class="space-y-2.5 max-h-[520px] overflow-y-auto pr-1"></div>
+          </aside>
+
+          <!-- Right Panel: Liquid Glass Journal Editor -->
+          <div class="lg:col-span-8 liquid-glass p-6 sm:p-9 space-y-5 min-h-[600px] flex flex-col justify-between">
+
+            <div class="space-y-4 border-b border-token pb-4">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2.5">
+                  <span id="journalDateDisplay" class="text-xs font-mono uppercase tracking-widest text-primary-token">NOV 12, 2026 · THU</span>
+                  <span id="journalOriginBadge" class="hidden text-[11px] px-3 py-0.5 rounded-full liquid-pill text-primary-token">
+                    Expanded from Note
+                  </span>
+                </div>
+
+                <div class="flex items-center gap-2.5">
+                  <span id="journalSaveStatus" class="text-xs font-mono text-secondary-token flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
+                    Saved
+                  </span>
+                  <button
+                    type="button"
+                    onclick="app.deleteCurrentJournal()"
+                    class="liquid-pill px-3 py-1 text-xs font-medium text-secondary-token hover:text-rose-400"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex flex-wrap items-center gap-1.5" id="editorMoodGroup">
+                  <span class="text-xs text-secondary-token mr-1">Mood:</span>
+                  <button type="button" onclick="app.setEditorMood('Calm')" data-mood="Calm" class="editor-mood-btn liquid-pill text-xs px-3 py-1 text-secondary-token">Calm</button>
+                  <button type="button" onclick="app.setEditorMood('Focused')" data-mood="Focused" class="editor-mood-btn liquid-pill text-xs px-3 py-1 text-secondary-token">Focused</button>
+                  <button type="button" onclick="app.setEditorMood('Inspired')" data-mood="Inspired" class="editor-mood-btn liquid-pill text-xs px-3 py-1 text-secondary-token">Inspired</button>
+                  <button type="button" onclick="app.setEditorMood('Reflective')" data-mood="Reflective" class="editor-mood-btn liquid-pill text-xs px-3 py-1 text-secondary-token">Reflective</button>
+                </div>
+
+                <button
+                  type="button"
+                  onclick="app.insertReflectionPrompt()"
+                  class="liquid-pill text-xs font-medium px-3.5 py-1 text-primary-token"
+                >
+                  + Reflection Prompt
+                </button>
+              </div>
+            </div>
+
+            <div class="flex-1 flex flex-col space-y-4 py-1">
+              <input
+                id="journalTitleInput"
+                type="text"
+                oninput="app.handleJournalInput()"
+                placeholder="Untitled entry..."
+                class="w-full bg-transparent text-2xl sm:text-3xl font-serif tracking-wide text-primary-token placeholder:text-muted-token"
+              />
+
+              <textarea
+                id="journalBodyInput"
+                oninput="app.handleJournalInput()"
+                placeholder="Write freely without distraction..."
+                class="w-full flex-1 min-h-[340px] bg-transparent text-sm sm:text-[15.5px] leading-[1.85] text-primary-token placeholder:text-muted-token resize-none"
+              ></textarea>
+            </div>
+
+            <div class="pt-4 border-t border-token flex flex-wrap items-center justify-between gap-2 text-xs text-secondary-token">
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="app.insertJournalSnippet('\n### ')" class="liquid-pill px-3 py-1 text-primary-token">Heading</button>
+                <button type="button" onclick="app.insertJournalSnippet('\n> ')" class="liquid-pill px-3 py-1 text-primary-token">Quote</button>
+                <button type="button" onclick="app.insertJournalSnippet('\n- [ ] ')" class="liquid-pill px-3 py-1 text-primary-token">Task</button>
+                <button type="button" onclick="app.insertJournalTimestamp()" class="liquid-pill px-3 py-1 text-primary-token">+ Timestamp</button>
+              </div>
+
+              <div class="flex items-center gap-3 font-mono text-xs">
+                <span id="journalCharCount">0 chars</span>
+                <span>·</span>
+                <span id="journalWordCount">0 words</span>
+                <button
+                  type="button"
+                  onclick="app.copyCurrentJournal()"
+                  class="liquid-pill px-3.5 py-1 font-sans font-medium text-primary-token"
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: BACKUP, RESTORE & TAURI / CAPACITOR NATIVE BRIDGE
+       ========================================================================== -->
+  <div id="bridgeModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+    <div class="liquid-glass max-w-2xl w-full p-6 sm:p-8 space-y-5 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-token pb-4">
+        <div>
+          <h3 class="text-lg font-semibold text-primary-token">Data Backup &amp; Native Packaging Bridge</h3>
+          <p class="text-xs text-secondary-token">Pure HTML / Tailwind / JS architecture ready for macOS (Tauri) and iOS (Capacitor).</p>
+        </div>
+        <button
+          type="button"
+          onclick="app.closeBridgeModal()"
+          class="liquid-icon-btn w-9 h-9 text-primary-token"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="liquid-pill rounded-2xl p-4">
+          <div class="text-[10px] font-mono uppercase text-secondary-token">Runtime</div>
+          <div id="diagRuntime" class="text-sm font-semibold text-primary-token mt-1">WEB · LOCAL</div>
+          <div class="text-[11px] text-secondary-token mt-0.5">Zero-Python Bundle</div>
+        </div>
+        <div class="liquid-pill rounded-2xl p-4">
+          <div class="text-[10px] font-mono uppercase text-secondary-token">Material</div>
+          <div class="text-sm font-semibold text-primary-token mt-1">Liquid Glass UI</div>
+          <div class="text-[11px] text-secondary-token mt-0.5">Stationary Minimal Canvas</div>
+        </div>
+        <div class="liquid-pill rounded-2xl p-4">
+          <div class="text-[10px] font-mono uppercase text-secondary-token">Stored Records</div>
+          <div id="diagCounts" class="text-sm font-semibold text-primary-token mt-1">4 Notes · 2 Journals</div>
+          <div class="text-[11px] text-secondary-token mt-0.5">Saved in localStorage</div>
+        </div>
+      </div>
+
+      <div class="space-y-2.5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <label class="text-xs font-medium text-secondary-token">Workspace JSON Snapshot</label>
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              onclick="app.copyBackupJson()"
+              class="liquid-pill px-3.5 py-1.5 text-xs font-medium text-primary-token"
+            >
+              Copy JSON
+            </button>
+            <button
+              type="button"
+              onclick="app.downloadBackupJson()"
+              class="liquid-pill liquid-pill-active px-3.5 py-1.5 text-xs font-semibold text-primary-token"
+            >
+              Download .json
+            </button>
+          </div>
+        </div>
+
+        <textarea
+          id="backupJsonTextarea"
+          rows="5"
+          class="w-full rounded-2xl bg-black/20 border border-token p-3.5 text-xs font-mono text-primary-token"
+          placeholder="Paste backup JSON here to restore..."
+        ></textarea>
+
+        <div class="flex items-center justify-between pt-2">
+          <button
+            type="button"
+            onclick="app.resetSampleData()"
+            class="text-xs text-secondary-token hover:text-primary-token underline underline-offset-4"
+          >
+            Reset to Default English Samples
+          </button>
+          <button
+            type="button"
+            onclick="app.importBackupJson()"
+            class="liquid-pill liquid-pill-active px-4 py-1.5 text-xs font-semibold text-primary-token"
+          >
+            Restore JSON
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       APPLICATION LOGIC (STATIONARY, 100% ENGLISH, ZERO-WARNING)
+       ========================================================================== -->
+  <script>
+    class StorageAdapter {
+      constructor(namespace = 'trace_liquid_glass_en_v4') {
+        this.namespace = namespace;
+        this.runtime = this.detectRuntime();
+        this.purgeLegacyStorage();
+      }
+
+      purgeLegacyStorage() {
+        const oldKeys = [
+          'trace_liquid_v1',
+          'trace_liquid_en_v2',
+          'trace_liquid_glass_en_v3',
+          'trace_notes_v1',
+          'trace_journals_v1',
+          'liquid_notes_data'
+        ];
+        oldKeys.forEach((key) => {
+          try {
+            localStorage.removeItem(key);
+          } catch (_) {}
+        });
+      }
+
+      detectRuntime() {
+        if (typeof window !== 'undefined' && window.__TAURI__) return 'TAURI · macOS';
+        if (typeof window !== 'undefined' && window.Capacitor) return 'CAPACITOR · iOS';
+        return 'WEB · LOCAL';
+      }
+
+      async loadState() {
+        try {
+          const raw = localStorage.getItem(this.namespace);
+          if (raw) return JSON.parse(raw);
+        } catch (err) {
+          console.error('Failed to load state:', err);
+        }
+        return null;
+      }
+
+      async saveState(state) {
+        try {
+          const serialized = JSON.stringify(state);
+          localStorage.setItem(this.namespace, serialized);
+          if (window.Capacitor?.Plugins?.Preferences) {
+            await window.Capacitor.Plugins.Preferences.set({
+              key: this.namespace,
+              value: serialized
+            });
+          }
+        } catch (err) {
+          console.error('Failed to save state:', err);
+        }
+      }
+    }
+
+    const DEFAULT_STATE = {
+      theme: 'dark',
+      activeMode: 'note',
+      notes: [
+        {
+          id: 'note-1',
+          title: 'Liquid Glass UI Adoption Principles',
+          body: '1. Translucent frosted layers with crisp 1px specular borders create calm depth without visual clutter.\n2. Keep the background completely stationary so reading and writing stay effortless.',
+          tag: 'design',
+          pinned: true,
+          createdAt: 'Nov 12, 2026 · 21:15'
+        },
+        {
+          id: 'note-2',
+          title: 'Tauri & Capacitor Native Packaging Checklist',
+          body: '- [x] Pure HTML / Tailwind / JS single-file architecture\n- [x] Zero CSS linter warnings in VS Code\n- [ ] Generate AppIcon.icns and run universal macOS build',
+          tag: 'checklist',
+          pinned: true,
+          createdAt: 'Nov 12, 2026 · 19:40'
+        },
+        {
+          id: 'note-3',
+          title: 'Midnight Walk Sentence Fragment',
+          body: '"A modern approach to design, clarity, and depth begins by removing every unnecessary motion."',
+          tag: 'idea',
+          pinned: false,
+          createdAt: 'Nov 11, 2026 · 23:10'
+        },
+        {
+          id: 'note-4',
+          title: 'Friday Morning Product Sync',
+          body: 'Review note-to-journal expansion workflow and finalize keyboard shortcuts (⌘1, ⌘2, ⌘D, ⌘K).',
+          tag: 'work',
+          pinned: false,
+          createdAt: 'Nov 11, 2026 · 15:30'
+        }
+      ],
+      journals: [
+        {
+          id: 'journal-1',
+          title: 'Designing for Calm Clarity and Optical Depth',
+          body: `Throughout the day, dozens of short thoughts appear. Most only need a few seconds to be captured as a quick note or checklist item—yet a few deserve a quieter space where they can unfold into a longer reflection.\n\nBy separating TRACE into two rhythms—Notes and Journal—the workspace adapts to the speed of thought. In Notes mode, every card is immediate and tactile. When evening arrives, clicking "Expand to Journal" promotes any note into a distraction-free long-form canvas.\n\n> "A modern approach to design, clarity, and depth."\n\n### Core Observations\n- Frosted glass surfaces work best over a calm, stationary canvas.\n- Dark mode remains deep and restful on the eyes, while Light mode captures the soft misty slate-pearl aesthetic.`,
+          mood: 'Calm',
+          dateLabel: 'NOV 12, 2026 · THU',
+          updatedAt: '21:30',
+          expandedFromNote: false
+        },
+        {
+          id: 'journal-2',
+          title: 'Why Local-First Architecture Feels Instant',
+          body: `Running without heavy server dependencies means every keystroke is saved immediately. Whether opened in Safari on localhost, packaged as a lightweight macOS app via Tauri, or compiled for iOS with Capacitor, the interface responds with zero latency.`,
+          mood: 'Focused',
+          dateLabel: 'NOV 10, 2026 · TUE',
+          updatedAt: '22:05',
+          expandedFromNote: true
+        }
+      ]
+    };
+
+    const REFLECTION_PROMPTS = [
+      'What single idea from today is worth carrying into tomorrow?',
+      'Which task created the most clarity once simplified?',
+      'What can I let go of tonight so tomorrow begins with focus?',
+      'Where did I notice calm and momentum in my workflow today?'
+    ];
+
+    class TraceWorkspaceApp {
+      constructor() {
+        this.storage = new StorageAdapter();
+        this.state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+        this.composerPinned = false;
+        this.composerTag = 'idea';
+        this.noteFilter = 'ALL';
+        this.journalMoodFilter = 'ALL';
+        this.searchQuery = '';
+        this.activeJournalId = null;
+      }
+
+      async init() {
+        const saved = await this.storage.loadState();
+        if (saved && Array.isArray(saved.notes) && Array.isArray(saved.journals)) {
+          this.state = saved;
+        } else {
+          await this.storage.saveState(this.state);
+        }
+
+        this.activeJournalId = this.state.journals[0]?.id || null;
+
+        document.getElementById('runtimeBadge').textContent = this.storage.runtime;
+        document.getElementById('diagRuntime').textContent = this.storage.runtime;
+
+        this.applyTheme(this.state.theme || 'dark');
+        this.switchMode(this.state.activeMode || 'note', false);
+        this.renderNotes();
+        this.renderJournalTimeline();
+        this.loadActiveJournalIntoEditor();
+        this.bindKeyboardShortcuts();
+      }
+
+      bindKeyboardShortcuts() {
+        window.addEventListener('keydown', (e) => {
+          const isMeta = e.metaKey || e.ctrlKey;
+          if (isMeta && e.key === '1') {
+            e.preventDefault();
+            this.switchMode('note');
+          } else if (isMeta && e.key === '2') {
+            e.preventDefault();
+            this.switchMode('journal');
+          } else if (isMeta && e.key.toLowerCase() === 'k') {
+            e.preventDefault();
+            document.getElementById('globalSearchInput')?.focus();
+          } else if (isMeta && e.key.toLowerCase() === 'd') {
+            e.preventDefault();
+            this.toggleTheme();
+          } else if (isMeta && e.key === 'Enter') {
+            if (document.activeElement?.id === 'noteBodyInput' || document.activeElement?.id === 'noteTitleInput') {
+              e.preventDefault();
+              this.saveQuickNote();
+            }
+          } else if (e.key === 'Escape') {
+            this.closeBridgeModal();
+          }
+        });
+      }
+
+      applyTheme(theme) {
+        this.state.theme = theme;
+        document.documentElement.setAttribute('data-theme', theme);
+        const sun = document.getElementById('iconSun');
+        const moon = document.getElementById('iconMoon');
+        if (theme === 'dark') {
+          sun?.classList.remove('hidden');
+          moon?.classList.add('hidden');
+        } else {
+          sun?.classList.add('hidden');
+          moon?.classList.remove('hidden');
+        }
+      }
+
+      toggleTheme() {
+        const next = this.state.theme === 'dark' ? 'light' : 'dark';
+        this.applyTheme(next);
+        this.storage.saveState(this.state);
+      }
+
+      switchMode(mode, persist = true) {
+        this.state.activeMode = mode;
+        document.body.setAttribute('data-mode', mode);
+        document.getElementById('modeSwitcherTrack')?.setAttribute('data-active', mode);
+
+        const viewNote = document.getElementById('viewNote');
+        const viewJournal = document.getElementById('viewJournal');
+        const btnNote = document.getElementById('btnModeNote');
+        const btnJournal = document.getElementById('btnModeJournal');
+
+        if (mode === 'note') {
+          viewNote.classList.remove('workspace-hidden');
+          viewNote.classList.add('workspace-active');
+          viewJournal.classList.remove('workspace-active');
+          viewJournal.classList.add('workspace-hidden');
+          btnNote.classList.replace('text-secondary-token', 'text-primary-token');
+          btnJournal.classList.replace('text-primary-token', 'text-secondary-token');
+        } else {
+          viewJournal.classList.remove('workspace-hidden');
+          viewJournal.classList.add('workspace-active');
+          viewNote.classList.remove('workspace-active');
+          viewNote.classList.add('workspace-hidden');
+          btnJournal.classList.replace('text-secondary-token', 'text-primary-token');
+          btnNote.classList.replace('text-primary-token', 'text-secondary-token');
+          this.renderJournalTimeline();
+          this.loadActiveJournalIntoEditor();
+        }
+
+        if (persist) this.storage.saveState(this.state);
+      }
+
+      handleSearch(query) {
+        this.searchQuery = (query || '').trim().toLowerCase();
+        const globalInput = document.getElementById('globalSearchInput');
+        const inlineInput = document.getElementById('inlineNoteSearch');
+        if (globalInput && globalInput.value !== query) globalInput.value = query;
+        if (inlineInput && inlineInput.value !== query) inlineInput.value = query;
+        this.renderNotes();
+        this.renderJournalTimeline();
+      }
+
+      toggleComposerPin() {
+        this.composerPinned = !this.composerPinned;
+        const btn = document.getElementById('notePinToggle');
+        if (this.composerPinned) {
+          btn.classList.add('liquid-pill-active', 'text-primary-token');
+          btn.classList.remove('text-secondary-token');
+        } else {
+          btn.classList.remove('liquid-pill-active', 'text-primary-token');
+          btn.classList.add('text-secondary-token');
+        }
+      }
+
+      selectComposerTag(tag) {
+        this.composerTag = tag;
+        document.querySelectorAll('.composer-tag').forEach((btn) => {
+          const active = btn.getAttribute('data-tag') === tag;
+          btn.classList.toggle('liquid-pill-active', active);
+          btn.classList.toggle('text-primary-token', active);
+          btn.classList.toggle('text-secondary-token', !active);
+        });
+      }
+
+      insertNoteChecklist() {
+        const bodyEl = document.getElementById('noteBodyInput');
+        const prefix = bodyEl.value.length > 0 && !bodyEl.value.endsWith('\n') ? '\n' : '';
+        bodyEl.value += `${prefix}- [ ] `;
+        this.selectComposerTag('checklist');
+        bodyEl.focus();
+      }
+
+      formatNowTimestamp() {
+        const now = new Date();
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const m = months[now.getMonth()];
+        const d = String(now.getDate()).padStart(2, '0');
+        const y = now.getFullYear();
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+        return `${m} ${d}, ${y} · ${hh}:${mm}`;
+      }
+
+      saveQuickNote() {
+        const titleEl = document.getElementById('noteTitleInput');
+        const bodyEl = document.getElementById('noteBodyInput');
+        let title = titleEl.value.trim();
+        const body = bodyEl.value.trim();
+
+        if (!title && !body) {
+          bodyEl.focus();
+          return;
+        }
+
+        if (!title) {
+          const firstLine = body.split('\n')[0].replace(/^- \[[ x]\] /i, '').trim();
+          title = firstLine.slice(0, 48) || 'Quick Note';
+        }
+
+        const newNote = {
+          id: 'note-' + Date.now(),
+          title,
+          body: body || title,
+          tag: this.composerTag,
+          pinned: this.composerPinned,
+          createdAt: this.formatNowTimestamp()
+        };
+
+        this.state.notes.unshift(newNote);
+        titleEl.value = '';
+        bodyEl.value = '';
+        if (this.composerPinned) this.toggleComposerPin();
+
+        this.storage.saveState(this.state);
+        this.renderNotes();
+      }
+
+      setNoteFilter(filter) {
+        this.noteFilter = filter;
+        document.querySelectorAll('.note-filter-btn').forEach((btn) => {
+          const active = btn.getAttribute('data-filter') === filter;
+          btn.classList.toggle('liquid-pill-active', active);
+          btn.classList.toggle('text-primary-token', active);
+          btn.classList.toggle('text-secondary-token', !active);
+        });
+        this.renderNotes();
+      }
+
+      toggleNotePin(noteId) {
+        const note = this.state.notes.find((n) => n.id === noteId);
+        if (!note) return;
+        note.pinned = !note.pinned;
+        this.storage.saveState(this.state);
+        this.renderNotes();
+      }
+
+      toggleChecklistLine(noteId, lineIndex) {
+        const note = this.state.notes.find((n) => n.id === noteId);
+        if (!note) return;
+        const lines = note.body.split('\n');
+        if (lines[lineIndex] === undefined) return;
+
+        if (/^- \[ \] /i.test(lines[lineIndex])) {
+          lines[lineIndex] = lines[lineIndex].replace(/^- \[ \] /i, '- [x] ');
+        } else if (/^- \[x\] /i.test(lines[lineIndex])) {
+          lines[lineIndex] = lines[lineIndex].replace(/^- \[x\] /i, '- [ ] ');
+        }
+        note.body = lines.join('\n');
+        this.storage.saveState(this.state);
+        this.renderNotes();
+      }
+
+      deleteNote(noteId) {
+        this.state.notes = this.state.notes.filter((n) => n.id !== noteId);
+        this.storage.saveState(this.state);
+        this.renderNotes();
+      }
+
+      copyNoteText(noteId) {
+        const note = this.state.notes.find((n) => n.id === noteId);
+        if (!note) return;
+        this.copyToClipboard(`${note.title}\n\n${note.body}`);
+      }
+
+      promoteNoteToJournal(noteId) {
+        const note = this.state.notes.find((n) => n.id === noteId);
+        if (!note) return;
+
+        const now = new Date();
+        const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+        const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+        const dateLabel = `${months[now.getMonth()]} ${String(now.getDate()).padStart(2, '0')}, ${now.getFullYear()} · ${days[now.getDay()]}`;
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+
+        const newJournal = {
+          id: 'journal-' + Date.now(),
+          title: note.title,
+          body: `${note.body}\n\n### Expanded Reflection\n`,
+          mood: 'Reflective',
+          dateLabel,
+          updatedAt: `${hh}:${mm}`,
+          expandedFromNote: true
+        };
+
+        this.state.journals.unshift(newJournal);
+        this.activeJournalId = newJournal.id;
+        this.storage.saveState(this.state);
+        this.updateHeaderCounts();
+        this.switchMode('journal');
+      }
+
+      escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      renderNoteBodyHtml(note) {
+        const lines = note.body.split('\n');
+        return lines
+          .map((line, idx) => {
+            const unchecked = line.match(/^- \[ \] (.*)$/i);
+            const checked = line.match(/^- \[x\] (.*)$/i);
+            if (unchecked) {
+              return `
+                <label onclick="app.toggleChecklistLine('${note.id}', ${idx})" class="flex items-start gap-2.5 cursor-pointer py-0.5 group">
+                  <span class="mt-1 w-4 h-4 rounded-md border border-current opacity-60 flex items-center justify-center shrink-0"></span>
+                  <span class="text-sm text-primary-token">${this.escapeHtml(unchecked[1])}</span>
+                </label>`;
+            }
+            if (checked) {
+              return `
+                <label onclick="app.toggleChecklistLine('${note.id}', ${idx})" class="flex items-start gap-2.5 cursor-pointer py-0.5 group">
+                  <span class="mt-1 w-4 h-4 rounded-md bg-white/25 border border-current flex items-center justify-center text-[10px] shrink-0">✓</span>
+                  <span class="text-sm line-through text-muted-token">${this.escapeHtml(checked[1])}</span>
+                </label>`;
+            }
+            return `<p class="text-sm leading-relaxed text-secondary-token">${this.escapeHtml(line)}</p>`;
+          })
+          .join('');
+      }
+
+      createNoteCardHtml(note) {
+        return `
+          <article class="liquid-glass liquid-glass-interactive p-5 sm:p-6 flex flex-col justify-between gap-4">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between gap-2">
+                <span class="liquid-pill text-[11px] font-medium px-3 py-1 text-secondary-token">#${this.escapeHtml(note.tag)}</span>
+                <div class="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onclick="app.toggleNotePin('${note.id}')"
+                    class="liquid-icon-btn w-7 h-7 ${note.pinned ? 'text-primary-token liquid-pill-active' : 'text-secondary-token'}"
+                    title="Pin / Unpin"
+                  >
+                    <svg class="w-3.5 h-3.5" fill="${note.pinned ? 'currentColor' : 'none'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onclick="app.copyNoteText('${note.id}')"
+                    class="liquid-icon-btn w-7 h-7 text-secondary-token hover:text-primary-token"
+                    title="Copy Note"
+                  >
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onclick="app.deleteNote('${note.id}')"
+                    class="liquid-icon-btn w-7 h-7 text-secondary-token hover:text-rose-400"
+                    title="Delete Note"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+
+              <h3 class="text-base font-semibold text-primary-token tracking-tight">${this.escapeHtml(note.title)}</h3>
+
+              <div class="space-y-1.5">
+                ${this.renderNoteBodyHtml(note)}
+              </div>
+            </div>
+
+            <div class="pt-3.5 border-t border-token flex items-center justify-between gap-2">
+              <span class="text-[11px] font-mono text-muted-token">${this.escapeHtml(note.createdAt)}</span>
+              <button
+                type="button"
+                onclick="app.promoteNoteToJournal('${note.id}')"
+                class="liquid-pill px-3.5 py-1.5 text-xs font-medium text-primary-token flex items-center gap-1.5"
+              >
+                <span>Expand to Journal</span>
+                <span>→</span>
+              </button>
+            </div>
+          </article>
+        `;
+      }
+
+      renderNotes() {
+        const filtered = this.state.notes.filter((note) => {
+          if (this.noteFilter === 'PINNED' && !note.pinned) return false;
+          if (this.noteFilter !== 'ALL' && this.noteFilter !== 'PINNED' && note.tag !== this.noteFilter) return false;
+          if (this.searchQuery) {
+            const hay = `${note.title} ${note.body} #${note.tag}`.toLowerCase();
+            if (!hay.includes(this.searchQuery)) return false;
+          }
+          return true;
+        });
+
+        const pinned = filtered.filter((n) => n.pinned);
+        const others = filtered.filter((n) => !n.pinned);
+
+        const pinnedSection = document.getElementById('pinnedNotesSection');
+        const pinnedGrid = document.getElementById('pinnedNotesGrid');
+        const recentGrid = document.getElementById('recentNotesGrid');
+        const recentLabel = document.getElementById('recentNotesLabel');
+
+        if (pinned.length > 0 && this.noteFilter !== 'PINNED') {
+          pinnedSection.classList.remove('hidden');
+          pinnedGrid.innerHTML = pinned.map((n) => this.createNoteCardHtml(n)).join('');
+        } else {
+          pinnedSection.classList.add('hidden');
+          pinnedGrid.innerHTML = '';
+        }
+
+        const listToRender = this.noteFilter === 'PINNED' ? pinned : others;
+        recentLabel.textContent = this.noteFilter === 'PINNED'
+          ? `PINNED NOTES (${listToRender.length})`
+          : `RECENT NOTES (${listToRender.length})`;
+
+        if (listToRender.length === 0) {
+          recentGrid.innerHTML = `
+            <div class="col-span-full liquid-glass p-8 text-center text-sm text-secondary-token">
+              No matching notes found. Write a new note above to get started.
+            </div>
+          `;
+        } else {
+          recentGrid.innerHTML = listToRender.map((n) => this.createNoteCardHtml(n)).join('');
+        }
+
+        this.updateHeaderCounts();
+      }
+
+      /* ======================================================================
+         JOURNAL CONTROLLER
+         ====================================================================== */
+      setJournalMoodFilter(mood) {
+        this.journalMoodFilter = mood;
+        document.querySelectorAll('.journal-mood-filter').forEach((btn) => {
+          const active = btn.getAttribute('data-mood') === mood;
+          btn.classList.toggle('liquid-pill-active', active);
+          btn.classList.toggle('text-primary-token', active);
+          btn.classList.toggle('text-secondary-token', !active);
+        });
+        this.renderJournalTimeline();
+      }
+
+      renderJournalTimeline() {
+        const listEl = document.getElementById('journalTimelineList');
+        const filtered = this.state.journals.filter((j) => {
+          if (this.journalMoodFilter !== 'ALL' && j.mood !== this.journalMoodFilter) return false;
+          if (this.searchQuery) {
+            const hay = `${j.title} ${j.body} ${j.mood}`.toLowerCase();
+            if (!hay.includes(this.searchQuery)) return false;
+          }
+          return true;
+        });
+
+        if (filtered.length === 0) {
+          listEl.innerHTML = `
+            <div class="liquid-pill rounded-2xl p-4 text-center text-xs text-secondary-token">
+              No journal entries match this filter.
+            </div>
+          `;
+          return;
+        }
+
+        listEl.innerHTML = filtered
+          .map((j) => {
+            const active = j.id === this.activeJournalId;
+            const preview = (j.body || '').replace(/\n+/g, ' ').slice(0, 82);
+            return `
+              <button
+                type="button"
+                onclick="app.selectJournal('${j.id}')"
+                class="w-full text-left rounded-2xl p-4 transition-all liquid-pill ${active ? 'liquid-pill-active' : ''}"
+              >
+                <div class="flex items-center justify-between gap-2 text-[10px] font-mono uppercase text-muted-token mb-1">
+                  <span>${this.escapeHtml(j.dateLabel)}</span>
+                  <span>${this.escapeHtml(j.mood)}</span>
+                </div>
+                <div class="text-sm font-semibold text-primary-token truncate">${this.escapeHtml(j.title || 'Untitled entry')}</div>
+                <p class="text-xs text-secondary-token truncate mt-1">${this.escapeHtml(preview)}</p>
+              </button>
+            `;
+          })
+          .join('');
+
+        this.updateHeaderCounts();
+      }
+
+      selectJournal(journalId) {
+        this.activeJournalId = journalId;
+        this.renderJournalTimeline();
+        this.loadActiveJournalIntoEditor();
+      }
+
+      loadActiveJournalIntoEditor() {
+        const current = this.state.journals.find((j) => j.id === this.activeJournalId) || this.state.journals[0];
+        const titleInput = document.getElementById('journalTitleInput');
+        const bodyInput = document.getElementById('journalBodyInput');
+        const dateDisplay = document.getElementById('journalDateDisplay');
+        const originBadge = document.getElementById('journalOriginBadge');
+
+        if (!current) {
+          titleInput.value = '';
+          bodyInput.value = '';
+          dateDisplay.textContent = 'NO ENTRY SELECTED';
+          originBadge.classList.add('hidden');
+          this.updateJournalStats('');
+          return;
+        }
+
+        this.activeJournalId = current.id;
+        titleInput.value = current.title;
+        bodyInput.value = current.body;
+        dateDisplay.textContent = current.dateLabel;
+        originBadge.classList.toggle('hidden', !current.expandedFromNote);
+
+        document.querySelectorAll('.editor-mood-btn').forEach((btn) => {
+          const active = btn.getAttribute('data-mood') === current.mood;
+          btn.classList.toggle('liquid-pill-active', active);
+          btn.classList.toggle('text-primary-token', active);
+          btn.classList.toggle('text-secondary-token', !active);
+        });
+
+        this.updateJournalStats(current.body);
+      }
+
+      createNewJournal() {
+        const now = new Date();
+        const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+        const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+        const dateLabel = `${months[now.getMonth()]} ${String(now.getDate()).padStart(2, '0')}, ${now.getFullYear()} · ${days[now.getDay()]}`;
+
+        const entry = {
+          id: 'journal-' + Date.now(),
+          title: 'Untitled Reflection',
+          body: '',
+          mood: 'Calm',
+          dateLabel,
+          updatedAt: 'Just now',
+          expandedFromNote: false
+        };
+
+        this.state.journals.unshift(entry);
+        this.activeJournalId = entry.id;
+        this.storage.saveState(this.state);
+        this.renderJournalTimeline();
+        this.loadActiveJournalIntoEditor();
+        document.getElementById('journalTitleInput')?.focus();
+      }
+
+      handleJournalInput() {
+        const current = this.state.journals.find((j) => j.id === this.activeJournalId);
+        if (!current) return;
+        current.title = document.getElementById('journalTitleInput').value;
+        current.body = document.getElementById('journalBodyInput').value;
+        this.updateJournalStats(current.body);
+        this.storage.saveState(this.state);
+        this.renderJournalTimeline();
+      }
+
+      setEditorMood(mood) {
+        const current = this.state.journals.find((j) => j.id === this.activeJournalId);
+        if (!current) return;
+        current.mood = mood;
+        this.storage.saveState(this.state);
+        this.loadActiveJournalIntoEditor();
+        this.renderJournalTimeline();
+      }
+
+      insertReflectionPrompt() {
+        const prompt = REFLECTION_PROMPTS[Math.floor(Math.random() * REFLECTION_PROMPTS.length)];
+        this.insertJournalSnippet(`\n> ${prompt}\n\n`);
+      }
+
+      insertJournalSnippet(snippet) {
+        const bodyEl = document.getElementById('journalBodyInput');
+        bodyEl.value += snippet;
+        this.handleJournalInput();
+        bodyEl.focus();
+      }
+
+      insertJournalTimestamp() {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+        this.insertJournalSnippet(`\n[${hh}:${mm}] `);
+      }
+
+      updateJournalStats(text) {
+        const clean = (text || '').trim();
+        const chars = clean.length;
+        const words = clean ? clean.split(/\s+/).length : 0;
+        document.getElementById('journalCharCount').textContent = `${chars} chars`;
+        document.getElementById('journalWordCount').textContent = `${words} words`;
+      }
+
+      deleteCurrentJournal() {
+        if (!this.activeJournalId) return;
+        this.state.journals = this.state.journals.filter((j) => j.id !== this.activeJournalId);
+        this.activeJournalId = this.state.journals[0]?.id || null;
+        this.storage.saveState(this.state);
+        this.renderJournalTimeline();
+        this.loadActiveJournalIntoEditor();
+      }
+
+      copyCurrentJournal() {
+        const current = this.state.journals.find((j) => j.id === this.activeJournalId);
+        if (!current) return;
+        this.copyToClipboard(`${current.title}\n\n${current.body}`);
+      }
+
+      updateHeaderCounts() {
+        document.getElementById('noteCountBadge').textContent = this.state.notes.length;
+        document.getElementById('journalCountBadge').textContent = this.state.journals.length;
+        const diagCounts = document.getElementById('diagCounts');
+        if (diagCounts) {
+          diagCounts.textContent = `${this.state.notes.length} Notes · ${this.state.journals.length} Journals`;
+        }
+      }
+
+      /* ======================================================================
+         BACKUP & BRIDGE MODAL
+         ====================================================================== */
+      openBridgeModal() {
+        const modal = document.getElementById('bridgeModal');
+        document.getElementById('backupJsonTextarea').value = JSON.stringify(this.state, null, 2);
+        this.updateHeaderCounts();
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+
+      closeBridgeModal() {
+        const modal = document.getElementById('bridgeModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+
+      copyBackupJson() {
+        const raw = document.getElementById('backupJsonTextarea').value;
+        this.copyToClipboard(raw);
+      }
+
+      downloadBackupJson() {
+        const raw = JSON.stringify(this.state, null, 2);
+        const blob = new Blob([raw], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'trace-workspace-backup.json';
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      importBackupJson() {
+        try {
+          const raw = document.getElementById('backupJsonTextarea').value;
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed.notes) && Array.isArray(parsed.journals)) {
+            this.state = parsed;
+            this.activeJournalId = this.state.journals[0]?.id || null;
+            this.storage.saveState(this.state);
+            this.applyTheme(this.state.theme || 'dark');
+            this.renderNotes();
+            this.renderJournalTimeline();
+            this.loadActiveJournalIntoEditor();
+            this.closeBridgeModal();
+          }
+        } catch (err) {
+          console.error('Invalid JSON backup:', err);
+        }
+      }
+
+      resetSampleData() {
+        this.state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+        this.activeJournalId = this.state.journals[0]?.id || null;
+        this.storage.saveState(this.state);
+        this.applyTheme(this.state.theme);
+        this.renderNotes();
+        this.renderJournalTimeline();
+        this.loadActiveJournalIntoEditor();
+        document.getElementById('backupJsonTextarea').value = JSON.stringify(this.state, null, 2);
+      }
+
+      copyToClipboard(text) {
+        const temp = document.createElement('textarea');
+        temp.value = text;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand('copy');
+        document.body.removeChild(temp);
+      }
+    }
+
+    const app = new TraceWorkspaceApp();
+    window.addEventListener('DOMContentLoaded', () => app.init());
+  </script>
+</body>
+</html>
